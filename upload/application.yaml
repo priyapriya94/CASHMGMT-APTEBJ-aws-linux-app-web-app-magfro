@@ -1,0 +1,125 @@
+server:
+  port : 8088
+  servlet:
+    context-path: /
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto    
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    basename: validation
+  mvc:
+    view:
+      prefix: /WEB-INF/view/
+      suffix: .jsp
+  primary:
+    datasource: 
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://${PRIMARY_DATABASE_URL}
+      port: ${DATABASE_PORT}
+      username: ${DATABASE_USERNAME}
+      password: ${DATABASE_PASSWORD}
+  replica:
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://${SECONDARY_DATABASE_URL}
+      port: ${DATABASE_PORT}
+      username: ${DATABASE_USERNAME}
+      password: ${DATABASE_PASSWORD}
+  redis:
+    database: 4
+    redisson:
+      config: file:/opt/apt/magfro/redisson.yaml
+  datasource:
+    hikari:
+      connectionTimeout: 60000
+      idleTimeout: 600000
+      maxLifetime: 1800000
+      minimumIdle: 2
+      maximumPoolSize: 10
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        generate_statistics: true
+        enable_lazy_load_no_trans: true
+        format_sql: false
+        hbm2ddl:
+          auto: none
+        show_sql: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.redisson.hibernate.RedissonRegionFactory
+          redisson:
+            database: 5
+            config: ./redisson.yaml
+            query:
+              eviction:
+                max_entries: 1000
+              expiration:
+                time_to_live: 240000
+                max_idle_time: 180000
+            entity:
+              eviction:
+                max_entries: 1000
+              expiration:
+                time_to_live: 240000
+                max_idle_time: 180000
+            collection:
+              eviction:
+                max_entries: 1000
+              expiration:
+                time_to_live: 240000
+                max_idle_time: 180000
+      javax:
+        persistence:
+          sharedCache:
+            mode: ALL
+  hibernate:
+    dialect: org.hibernate.dialect.MySQL5Dialect
+    generate_statistics: true
+hibernate:
+  jdbc:
+    batch_size: 20
+endpoints:
+  logfile:
+    enabled: true
+logging:
+  file: /var/log/${WEBAPP_TYPE}/${WEBAPP_TYPE}.log
+  config: /opt/apt/${WEBAPP_TYPE}/logback.xml
+  level:
+    root: INFO  
+    com:
+      telus:
+        apt: trace
+      org:
+        springframework: trace    
+      amazonaws:
+         xray: INFO
+apt:
+  tracing:
+    enabled: true
+  web:
+    recognizedHosts: '*.${HZ_DOMAIN_NAME}'
+    name: WEB-APPLICATION
+aws:
+  mail:
+    from: ${SENDER_NAME}
+mag:
+  fro:
+    paytax-payment-extension-confirmation-number: 0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+    paytax-payment-extension-extension-number: 1
+    paytax-payment-extension-payment-type-code: 9100
+#DB connection parameters
+ssl: useSSL=true
+tls:
+  protocol: enabledTLSProtocols=TLSv1.2    

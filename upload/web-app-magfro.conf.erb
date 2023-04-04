@@ -1,0 +1,33 @@
+JVM_GENERAL_OPTS="
+  -server
+  -Djava.net.preferIPv4Stack=true
+  -Dnetworkaddress.cache.ttl=30
+  -Djava.awt.headless=true
+"
+
+JVM_GC_OPTS="
+  -XX:+DisableExplicitGC
+  -XX:+ParallelRefProcEnabled
+  -XX:+UseG1GC 
+  -XX:+UseStringDeduplication
+  -XX:MaxGCPauseMillis=200
+  -XX:-UseAdaptiveSizePolicy
+  -Dsun.rmi.dgc.server.gcInterval=0x7ffffffffffffffe
+  -Dsun.rmi.dgc.client.gcInterval=0x7ffffffffffffffe
+"
+
+JVM_MEMORY_OPTS="
+  -XX:+AlwaysPreTouch
+  -Xms<%= @jvm_mem_size %>m
+  -Xmx<%= @jvm_mem_size %>m
+  -XX:MetaspaceSize=<%= @jvm_metaspace_size %>m
+  -XX:MaxMetaspaceSize=<%= @jvm_metaspace_size %>m
+  -XX:InitialCodeCacheSize=<%= @jvm_codecache_size %>m
+  -XX:ReservedCodeCacheSize=<%= @jvm_codecache_size %>m
+  -XX:+UseNUMA
+  -XX:+NUMAStats
+"
+
+JAVA_OPTS="${JVM_GENERAL_OPTS} ${JVM_GC_OPTS} ${JVM_MEMORY_OPTS}"
+
+RUN_ARGS=--spring.config.location=file:<%= @app_home_dir %>/
